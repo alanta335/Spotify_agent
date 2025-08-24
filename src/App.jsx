@@ -1,12 +1,13 @@
-function App() {
+import React from 'react';
+import Layout from './components/layout/Layout';
+import ChatContainer from './components/chat/ChatContainer';
 
+function App() {
   return (
-    <>
-      <h1 class="text-3xl font-bold underline">
-        Hello world!
-      </h1>
-    </>
-  )
+    <Layout>
+      <ChatContainer />
+    </Layout>
+  );
 }
 
-export default App
+export default App;
