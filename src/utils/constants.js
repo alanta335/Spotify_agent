@@ -11,7 +11,7 @@ export const API_CONFIG = {
 // Spotify API Configuration
 export const SPOTIFY_CONFIG = {
   CLIENT_ID: import.meta.env.VITE_SPOTIFY_CLIENT_ID || '',
-  REDIRECT_URI: import.meta.env.VITE_REDIRECT_URI || 'http://localhost:3000/callback',
+  REDIRECT_URI: import.meta.env.VITE_REDIRECT_URI || 'http://localhost:5173/callback',
   SCOPES: [
     'user-read-private',
     'user-read-email',

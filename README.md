@@ -79,7 +79,7 @@ src/
    ```
 
 5. **Open your browser**
-   Navigate to `http://localhost:3000`
+   Navigate to `http://localhost:5173`
 
 ## 🔧 Configuration
 
@@ -88,7 +88,7 @@ src/
 **Important**: This app now uses secure OAuth authentication instead of hardcoded API keys.
 
 1. Create a Spotify app in the [Spotify Developer Dashboard](https://developer.spotify.com/dashboard)
-2. Configure the redirect URI: `http://localhost:3000/callback`
+2. Configure the redirect URI: `http://localhost:5173/callback`
 3. Copy your Client ID and add it to your `.env` file
 
 For detailed setup instructions, see [SETUP.md](./SETUP.md).

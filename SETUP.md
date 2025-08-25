@@ -14,8 +14,8 @@
 4. Fill in the app details:
    - App name: "Spotify AI Agent" (or any name you prefer)
    - App description: "AI-powered Spotify assistant"
-   - Website: `http://localhost:3000`
-   - Redirect URI: `http://localhost:3000/callback`
+   - Website: `http://localhost:5173`
+   - Redirect URI: `http://localhost:5173/callback`
    - API/SDKs: Web API
 5. Accept the terms and create the app
 6. Copy your **Client ID** from the app dashboard
@@ -27,7 +27,7 @@
 
 ```env
 VITE_SPOTIFY_CLIENT_ID=your_spotify_client_id_here
-VITE_REDIRECT_URI=http://localhost:3000/callback
+VITE_REDIRECT_URI=http://localhost:5173/callback
 ```
 
 Replace `your_spotify_client_id_here` with the Client ID you copied from the Spotify Developer Dashboard.
@@ -44,7 +44,7 @@ npm install
 npm run dev
 ```
 
-3. Open your browser and navigate to `http://localhost:3000`
+3. Open your browser and navigate to `http://localhost:5173`
 
 ## Authentication Flow
 
