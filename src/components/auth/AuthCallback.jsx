@@ -2,20 +2,41 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import spotifyAuth from '../../services/auth';
 import LoadingSpinner from '../ui/LoadingSpinner';
+import { useAuth } from '../../contexts/AuthContext';
 
 const AuthCallback = () => {
   const [error, setError] = useState(null);
   const [isProcessing, setIsProcessing] = useState(true);
   const navigate = useNavigate();
+  const { updateAuthState } = useAuth();
 
   useEffect(() => {
     const handleCallback = async () => {
       try {
         setIsProcessing(true);
-        await spotifyAuth.handleCallback();
+        console.log('Starting OAuth callback handling...');
         
-        // Redirect to main app after successful authentication
-        navigate('/', { replace: true });
+        // Handle the OAuth callback and exchange code for tokens
+        await spotifyAuth.handleCallback();
+        console.log('Token exchange successful');
+        
+        // Update the authentication state in the context
+        updateAuthState();
+        console.log('Auth state updated');
+        
+        // Small delay to ensure state is properly updated
+        await new Promise(resolve => setTimeout(resolve, 200));
+        
+        // Verify authentication state before redirecting
+        const isAuthenticated = spotifyAuth.isAuthenticated();
+        console.log('Authentication status after callback:', isAuthenticated);
+        
+        if (isAuthenticated) {
+          // Redirect to main app after successful authentication
+          navigate('/', { replace: true });
+        } else {
+          throw new Error('Authentication state not properly set after token exchange');
+        }
       } catch (err) {
         console.error('Authentication callback error:', err);
         setError(err.message);
@@ -24,7 +45,7 @@ const AuthCallback = () => {
     };
 
     handleCallback();
-  }, [navigate]);
+  }, [navigate, updateAuthState]);
 
   if (error) {
     return (

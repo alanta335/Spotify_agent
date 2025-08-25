@@ -14,22 +14,26 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isOAuthFlow, setIsOAuthFlow] = useState(false);
   const [user, setUser] = useState(null);
 
-  useEffect(() => {
-    const checkAuthStatus = () => {
-      const authenticated = spotifyAuth.isAuthenticated();
-      setIsAuthenticated(authenticated);
-      setIsLoading(false);
-    };
+  const checkAuthStatus = () => {
+    const authenticated = spotifyAuth.isAuthenticated();
+    console.log('Checking auth status:', authenticated);
+    setIsAuthenticated(authenticated);
+    setIsLoading(false);
+  };
 
+  useEffect(() => {
     checkAuthStatus();
   }, []);
 
   const login = async () => {
     try {
+      setIsOAuthFlow(true);
       await spotifyAuth.authorize();
     } catch (error) {
+      setIsOAuthFlow(false);
       console.error('Login error:', error);
       throw error;
     }
@@ -39,6 +43,7 @@ export const AuthProvider = ({ children }) => {
     spotifyAuth.logout();
     setIsAuthenticated(false);
     setUser(null);
+    setIsOAuthFlow(false);
   };
 
   const refreshToken = async () => {
@@ -56,14 +61,33 @@ export const AuthProvider = ({ children }) => {
     return spotifyAuth.getAuthHeaders();
   };
 
+  // Method to update auth state after successful callback
+  const updateAuthState = () => {
+    console.log('Updating auth state...');
+    setIsOAuthFlow(false);
+    checkAuthStatus();
+  };
+
+  // Force refresh auth state (useful for debugging)
+  const forceRefreshAuth = () => {
+    console.log('Force refreshing auth state...');
+    setIsLoading(true);
+    setTimeout(() => {
+      checkAuthStatus();
+    }, 100);
+  };
+
   const value = {
     isAuthenticated,
     isLoading,
+    isOAuthFlow,
     user,
     login,
     logout,
     refreshToken,
     getAuthHeaders,
+    updateAuthState,
+    forceRefreshAuth,
   };
 
   return (

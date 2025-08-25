@@ -9,9 +9,10 @@ import LoadingSpinner from './components/ui/LoadingSpinner';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, isOAuthFlow } = useAuth();
 
-  if (isLoading) {
+  // Show loading if we're loading or in the middle of OAuth flow
+  if (isLoading || isOAuthFlow) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-900">
         <LoadingSpinner size="large" />
