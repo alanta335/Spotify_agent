@@ -55,8 +55,8 @@ export const UI_CONFIG = {
 // Default User Data
 export const DEFAULT_USER_DATA = {
   userName: "Alan",
-  userId: "123",
-  apiKey: "BQDfS-tKBh_vv-j9gr0wqOWwUKY6MC-LhT4hUA38FdBHR9D74aoYB2Ckovj4w2PmhKcV2raIkz_DaLZLQnrYSSAyLwq-mKrHHz0qctCqZRlUbGuYOSQAB3B7Vjl3gSIpUp01xeP_kLid70Ip6sC3MQeNdUi3DikasF8kJwx_VZKIfxquUu8orUo_Z5NWOfk8e3vrca_a7dPSFBWuwFSa-Ubh28vlYipDG6EDjNBMZ0xoFoAGQIkcOUpx_v4gt_DuHgpMQvFuMMd2_RG8oGeXRMWw7TpsJac6Pun3rXj9t1VaC7AMlKymekl1xgTVyLu0Xyw2fjwGswgsWUWipoOuWzbM0Gxm-QEQI7L0uJS9432SiLl7Eq8Q7wZOr-3kvYT4ELz5jxcJtCiP"
+  userId: "123"
+  // Removed hardcoded apiKey - now using OAuth authentication
 };
 
 // Local Storage Keys
@@ -65,5 +65,6 @@ export const STORAGE_KEYS = {
   CHAT_HISTORY: 'spotify_agent_chat_history',
   SETTINGS: 'spotify_agent_settings',
   ACCESS_TOKEN: 'spotify_access_token',
-  REFRESH_TOKEN: 'spotify_refresh_token'
+  REFRESH_TOKEN: 'spotify_refresh_token',
+  CODE_VERIFIER: 'spotify_code_verifier'
 };

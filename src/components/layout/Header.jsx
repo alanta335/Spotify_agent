@@ -1,6 +1,35 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../../contexts/AuthContext';
+import { apiService } from '../../services/api';
 
 const Header = () => {
+  const { isAuthenticated, logout, getAuthHeaders } = useAuth();
+  const [userProfile, setUserProfile] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      if (isAuthenticated) {
+        try {
+          setIsLoading(true);
+          const authHeaders = getAuthHeaders();
+          const profile = await apiService.getSpotifyUserProfile(authHeaders);
+          setUserProfile(profile);
+        } catch (error) {
+          console.error('Error fetching user profile:', error);
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    fetchUserProfile();
+  }, [isAuthenticated, getAuthHeaders]);
+
+  const handleLogout = () => {
+    logout();
+  };
+
   return (
     <header className="bg-black text-white px-6 py-4 border-b border-gray-800">
       <div className="flex items-center justify-between max-w-7xl mx-auto">
@@ -18,9 +47,36 @@ const Header = () => {
           <a href="#" className="text-gray-300 hover:text-white transition-colors">Settings</a>
         </nav>
         <div className="flex items-center space-x-4">
-          <button className="bg-green-500 hover:bg-green-600 text-black font-semibold px-4 py-2 rounded-full transition-colors">
-            Connect Spotify
-          </button>
+          {isAuthenticated ? (
+            <div className="flex items-center space-x-3">
+              {isLoading ? (
+                <div className="text-gray-300 text-sm">Loading...</div>
+              ) : userProfile ? (
+                <div className="flex items-center space-x-2">
+                  {userProfile.images && userProfile.images[0] && (
+                    <img 
+                      src={userProfile.images[0].url} 
+                      alt={userProfile.display_name}
+                      className="w-8 h-8 rounded-full"
+                    />
+                  )}
+                  <span className="text-sm text-gray-300 hidden sm:block">
+                    {userProfile.display_name}
+                  </span>
+                </div>
+              ) : (
+                <span className="text-sm text-gray-300">Connected</span>
+              )}
+              <button 
+                onClick={handleLogout}
+                className="bg-gray-700 hover:bg-gray-600 text-white font-semibold px-4 py-2 rounded-full transition-colors text-sm"
+              >
+                Logout
+              </button>
+            </div>
+          ) : (
+            <div className="text-gray-300 text-sm">Not connected</div>
+          )}
         </div>
       </div>
     </header>

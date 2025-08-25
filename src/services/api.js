@@ -1,13 +1,14 @@
-const API_BASE_URL = 'http://localhost:8080';
+import { API_CONFIG } from '../utils/constants';
 
 export const apiService = {
   // Send chat message to the AI agent
-  async sendChatMessage(prompt, userData = {}) {
+  async sendChatMessage(prompt, userData = {}, authHeaders) {
     try {
-      const response = await fetch(`${API_BASE_URL}/chat`, {
+      const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.CHAT}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          ...authHeaders
         },
         body: JSON.stringify({
           data: {
@@ -16,12 +17,15 @@ export const apiService = {
           userData: {
             userName: userData.userName || "Alan",
             userId: userData.userId || "123",
-            apiKey: userData.apiKey || "BQDfS-tKBh_vv-j9gr0wqOWwUKY6MC-LhT4hUA38FdBHR9D74aoYB2Ckovj4w2PmhKcV2raIkz_DaLZLQnrYSSAyLwq-mKrHHz0qctCqZRlUbGuYOSQAB3B7Vjl3gSIpUp01xeP_kLid70Ip6sC3MQeNdUi3DikasF8kJwx_VZKIfxquUu8orUo_Z5NWOfk8e3vrca_a7dPSFBWuwFSa-Ubh28vlYipDG6EDjNBMZ0xoFoAGQIkcOUpx_v4gt_DuHgpMQvFuMMd2_RG8oGeXRMWw7TpsJac6Pun3rXj9t1VaC7AMlKymekl1xgTVyLu0Xyw2fjwGswgsWUWipoOuWzbM0Gxm-QEQI7L0uJS9432SiLl7Eq8Q7wZOr-3kvYT4ELz5jxcJtCiP"
+            // Remove hardcoded apiKey - will be handled by backend using auth headers
           }
         })
       });
 
       if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Authentication required. Please log in again.');
+        }
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
@@ -34,16 +38,20 @@ export const apiService = {
   },
 
   // Get user profile information
-  async getUserProfile(userId) {
+  async getUserProfile(userId, authHeaders) {
     try {
-      const response = await fetch(`${API_BASE_URL}/user/${userId}`, {
+      const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.USER_PROFILE}/${userId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
+          ...authHeaders
         }
       });
 
       if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Authentication required. Please log in again.');
+        }
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
@@ -56,16 +64,20 @@ export const apiService = {
   },
 
   // Get current playback state
-  async getCurrentPlayback() {
+  async getCurrentPlayback(authHeaders) {
     try {
-      const response = await fetch(`${API_BASE_URL}/playback/current`, {
+      const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.PLAYBACK}/current`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
+          ...authHeaders
         }
       });
 
       if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Authentication required. Please log in again.');
+        }
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
@@ -73,6 +85,32 @@ export const apiService = {
       return data;
     } catch (error) {
       console.error('Error fetching current playback:', error);
+      throw error;
+    }
+  },
+
+  // Get Spotify user profile
+  async getSpotifyUserProfile(authHeaders) {
+    try {
+      const response = await fetch('https://api.spotify.com/v1/me', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          ...authHeaders
+        }
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Authentication required. Please log in again.');
+        }
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error fetching Spotify user profile:', error);
       throw error;
     }
   }

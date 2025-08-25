@@ -5,6 +5,7 @@ import WelcomeMessage from './WelcomeMessage';
 import { apiService } from '../../services/api';
 import { DEFAULT_USER_DATA } from '../../utils/constants';
 import LoadingSpinner from '../ui/LoadingSpinner';
+import { useAuth } from '../../contexts/AuthContext';
 
 const ChatContainer = () => {
   const [messages, setMessages] = useState([
@@ -17,6 +18,7 @@ const ChatContainer = () => {
   ]);
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
+  const { getAuthHeaders, logout } = useAuth();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -38,7 +40,8 @@ const ChatContainer = () => {
     setIsLoading(true);
 
     try {
-      const data = await apiService.sendChatMessage(messageText, DEFAULT_USER_DATA);
+      const authHeaders = getAuthHeaders();
+      const data = await apiService.sendChatMessage(messageText, DEFAULT_USER_DATA, authHeaders);
       
       // Parse the response based on the expected JSON structure
       let messageContent;
@@ -70,13 +73,22 @@ const ChatContainer = () => {
       setMessages(prev => [...prev, aiMessage]);
     } catch (error) {
       console.error('Error sending message:', error);
-      const errorMessage = {
+      
+      let errorMessage = "Sorry, I encountered an error. Please try again.";
+      
+      // Handle authentication errors
+      if (error.message.includes('Authentication required')) {
+        errorMessage = "Your session has expired. Please log in again.";
+        logout();
+      }
+      
+      const errorMsg = {
         id: Date.now() + 1,
-        message: "Sorry, I encountered an error. Please try again.",
+        message: errorMessage,
         isUser: false,
         timestamp: new Date().toLocaleTimeString()
       };
-      setMessages(prev => [...prev, errorMessage]);
+      setMessages(prev => [...prev, errorMsg]);
     } finally {
       setIsLoading(false);
     }
