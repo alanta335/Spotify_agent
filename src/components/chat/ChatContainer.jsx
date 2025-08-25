@@ -40,9 +40,29 @@ const ChatContainer = () => {
     try {
       const data = await apiService.sendChatMessage(messageText, DEFAULT_USER_DATA);
       
+      // Parse the response based on the expected JSON structure
+      let messageContent;
+      if (data.response && typeof data.response === 'string') {
+        try {
+          const parsedResponse = JSON.parse(data.response);
+          messageContent = parsedResponse.content?.message || data.response;
+          
+          // Handle any actions if present
+          if (parsedResponse.content?.actions && parsedResponse.content.actions.length > 0) {
+            console.log('Spotify actions to execute:', parsedResponse.content.actions);
+            // TODO: Process Spotify actions here
+          }
+        } catch (parseError) {
+          // Fallback to plain text if JSON parsing fails
+          messageContent = data.response;
+        }
+      } else {
+        messageContent = data.response || "I've processed your request. Is there anything else you'd like me to help you with?";
+      }
+      
       const aiMessage = {
         id: Date.now() + 1,
-        message: data.response || "I've processed your request. Is there anything else you'd like me to help you with?",
+        message: messageContent,
         isUser: false,
         timestamp: new Date().toLocaleTimeString()
       };
